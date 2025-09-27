@@ -10,7 +10,7 @@ import NoteForm from "@/components/NoteForm/NoteForm";
 import { useDebounce } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
-import type { NoteListResponse, Note } from "../../components/types/note";
+import type { NoteListResponse, Note } from "../../types/note";
 
 const PER_PAGE = 12;
 
