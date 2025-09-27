@@ -4,13 +4,13 @@
 
 import { useState } from "react";
 import NoteList from "@/components/NoteList/NoteList";
-import { getNotes, Note } from "@/lib/api";
+import { fetchNotes, Note } from "@/lib/api";
 
 const Notes = () => {
   const [notes, setNotes] = useState<Note[]>([]);
 
   const handleClick = async () => {
-    const response = await getNotes();
+    const response = await fetchNotes();
     if (response?.notes) {
       setNotes(response.notes);
     }
