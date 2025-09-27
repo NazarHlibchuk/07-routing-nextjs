@@ -1,28 +1,21 @@
-// app/notes/page.tsx
-
 "use client";
 
-import { useState } from "react";
-import NoteList from "@/components/NoteList/NoteList";
-import { fetchNotes, Note } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { fetchNotes } from "@/lib/api";
 
-const Notes = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+export default function NotesList() {
+  const { data, isLoading, error } = useQuery(["notes"], fetchNotes);
 
-  const handleClick = async () => {
-    const response = await fetchNotes();
-    if (response?.notes) {
-      setNotes(response.notes);
-    }
-  };
+  if (isLoading) return <p>Loading notes...</p>;
+  if (error) return <p>Error loading notes</p>;
 
   return (
-    <section>
-      <h1>Notes List</h1>
-      <button onClick={handleClick}>Get my notes</button>
-      {notes.length > 0 && <NoteList notes={notes} />}
-    </section>
+    <ul>
+      {data?.notes.map((note) => (
+        <li key={note.id}>
+          <strong>{note.title}</strong>: {note.content}
+        </li>
+      ))}
+    </ul>
   );
 }
-
-export default Notes;

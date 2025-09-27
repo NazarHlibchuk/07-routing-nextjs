@@ -1,4 +1,6 @@
 import axios from "axios";
+import { Note } from "@/types/note";
+import { FetchNotesResponse } from "@/types/api";
 
 const BASE =
   process.env.NEXT_PUBLIC_NOTEHUB_BASE_URL ??
@@ -20,18 +22,6 @@ export interface FetchNotesParams {
   perPage?: number;
   search?: string;
   tag?: string;
-}
-
-export interface Note {
-  id: string;
-  title: string;
-  content: string;
-}
-
-
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
 }
 
 export interface CreateNotePayload {

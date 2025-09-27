@@ -10,7 +10,7 @@ import NoteForm from "@/components/NoteForm/NoteForm";
 import { useDebounce } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
-import type { NoteListResponse, Note } from "../../types/note";
+import type { NoteListResponse, Note } from "@/types/note";
 
 const PER_PAGE = 12;
 
@@ -27,7 +27,7 @@ export default function NotesClient() {
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const { data, isLoading, isError, refetch } = useQuery<NoteListResponse>({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery<NoteListResponse>({
     queryKey: ["notes", page, debouncedSearch],
     queryFn: () =>
       fetchNotes({
@@ -35,14 +35,15 @@ export default function NotesClient() {
         perPage: PER_PAGE,
         search: debouncedSearch,
       } as FetchNotesParams),
+    keepPreviousData: true,
+    placeholderData: () => data,
   });
 
   const totalPages = data?.totalPages ?? 0;
   const notes: Note[] = data?.notes ?? [];
 
-  // Функція для передачі в NoteList
   const handleDeleteSuccess = async (): Promise<void> => {
-    await refetch(); // refetch повертає Promise<QueryObserverResult>, але async обгортка перетворює його на Promise<void>
+    await refetch();
   };
 
   return (
@@ -60,6 +61,7 @@ export default function NotesClient() {
             pageCount={totalPages}
             currentPage={page}
             onPageChange={(p) => setPage(p)}
+            isLoading={isFetching} // передаємо стан завантаження
           />
         )}
         <button className={css.button} onClick={() => setIsModalOpen(true)}>
@@ -67,13 +69,15 @@ export default function NotesClient() {
         </button>
       </header>
 
-      {isLoading && <p>Loading...</p>}
-      {isError && <p>Something went wrong</p>}
-
-      {notes.length > 0 ? (
+      {/* Плавна анімація завантаження */}
+      {isLoading || isFetching ? (
+        <p className={css.loading}>Loading notes...</p>
+      ) : isError ? (
+        <p className={css.error}>Something went wrong</p>
+      ) : notes.length > 0 ? (
         <NoteList notes={notes} onDeleteSuccess={handleDeleteSuccess} />
       ) : (
-        !isLoading && <p>No notes found</p>
+        <p>No notes found</p>
       )}
 
       {isModalOpen && (
@@ -81,7 +85,7 @@ export default function NotesClient() {
           <NoteForm
             onSuccess={async () => {
               setIsModalOpen(false);
-              await refetch(); // async wrapper
+              await refetch();
             }}
             onCancel={() => setIsModalOpen(false)}
           />

@@ -4,11 +4,11 @@ import { fetchNoteById } from "@/lib/api";
 import NoteDetailsClient from "./NoteDetails.client";
 
 type Props = {
-  params: { id: string }; // Next.js передає params синхронно
+  params: Promise<{ id: string }>;
 };
 
 const NoteDetailsPage = async ({ params }: Props) => {
-  const { id } = params;
+  const { id } = await params; 
   const queryClient = new QueryClient();
 
   // Prefetch note by id
