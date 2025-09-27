@@ -1,5 +1,4 @@
 import axios from "axios";
-import type { Note as NoteType } from "../components/types/note";
 
 const BASE =
   process.env.NEXT_PUBLIC_NOTEHUB_BASE_URL ??
@@ -16,14 +15,19 @@ const instance = axios.create({
 
 // -------------------- Types --------------------
 
-export interface Note extends NoteType {} // ✅ експортовані Note для імпорту у компонентах
-
 export interface FetchNotesParams {
   page?: number;
   perPage?: number;
   search?: string;
   tag?: string;
 }
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+}
+
 
 export interface FetchNotesResponse {
   notes: Note[];
