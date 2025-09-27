@@ -10,7 +10,7 @@ import NoteForm from "@/components/NoteForm/NoteForm";
 import { useDebounce } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
-import type { NoteListResponse, Note } from "@/types/note";
+import type { NoteListResponse, Note } from "../../components/types/note";
 
 const PER_PAGE = 12;
 
@@ -40,6 +40,11 @@ export default function NotesClient() {
   const totalPages = data?.totalPages ?? 0;
   const notes: Note[] = data?.notes ?? [];
 
+  // Функція для передачі в NoteList
+  const handleDeleteSuccess = async (): Promise<void> => {
+    await refetch(); // refetch повертає Promise<QueryObserverResult>, але async обгортка перетворює його на Promise<void>
+  };
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
@@ -66,7 +71,7 @@ export default function NotesClient() {
       {isError && <p>Something went wrong</p>}
 
       {notes.length > 0 ? (
-        <NoteList notes={notes} onDeleteSuccess={() => refetch()} />
+        <NoteList notes={notes} onDeleteSuccess={handleDeleteSuccess} />
       ) : (
         !isLoading && <p>No notes found</p>
       )}
@@ -74,9 +79,9 @@ export default function NotesClient() {
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
           <NoteForm
-            onSuccess={() => {
+            onSuccess={async () => {
               setIsModalOpen(false);
-              refetch();
+              await refetch(); // async wrapper
             }}
             onCancel={() => setIsModalOpen(false)}
           />

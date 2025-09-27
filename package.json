@@ -11,15 +11,19 @@
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
     "axios": "^1.12.2",
+    "formik": "^2.4.6",
     "next": "15.5.4",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "use-debounce": "^10.0.6",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/yup": "^0.29.14",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "eslint-config-prettier": "^10.1.8",

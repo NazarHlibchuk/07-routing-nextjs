@@ -1,32 +1,25 @@
-
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from 'next/navigation';
-import { fetchNoteById } from "@/lib/api";
+import { fetchNoteById, Note } from "@/lib/api";
 
-const NoteDetailsClient = () => {
-	const { id } = useParams<{ id: string }>();
+type Props = {
+  noteId: string;
+};
 
-  const { data: note, isLoading, error } = useQuery({
-    queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
-    refetchOnMount: false,
+const NoteDetailsClient = ({ noteId }: Props) => {
+  const { data: note, isLoading, isError } = useQuery<Note>({
+    queryKey: ["note", noteId],
+    queryFn: () => fetchNoteById(noteId),
   });
 
   if (isLoading) return <p>Loading...</p>;
-
-  if (error || !note) return <p>Some error..</p>;
-
-  const formattedDate = note.updatedAt
-    ? `Updated at: ${note.updatedAt}`
-    : `Created at: ${note.createdAt}`;
+  if (isError || !note) return <p>Error loading note.</p>;
 
   return (
     <div>
-      <h2>{note.title}</h2>
+      <h1>{note.title}</h1>
       <p>{note.content}</p>
-      <p>{formattedDate}</p>
     </div>
   );
 };

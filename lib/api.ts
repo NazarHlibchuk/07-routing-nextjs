@@ -1,10 +1,9 @@
-
-
 import axios from "axios";
-import type { Note } from "../components/types/note";
+import type { Note as NoteType } from "../components/types/note";
 
 const BASE =
-  process.env.NEXT_PUBLIC_NOTEHUB_TOKEN ?? "https://notehub-public.goit.study/api";
+  process.env.NEXT_PUBLIC_NOTEHUB_BASE_URL ??
+  "https://notehub-public.goit.study/api";
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
 const instance = axios.create({
@@ -17,21 +16,23 @@ const instance = axios.create({
 
 // -------------------- Types --------------------
 
+export interface Note extends NoteType {} // ✅ експортовані Note для імпорту у компонентах
+
 export interface FetchNotesParams {
   page?: number;
   perPage?: number;
   search?: string;
-  tag?: string; // ✅ API підтримує фільтрацію за тегом
+  tag?: string;
 }
 
 export interface FetchNotesResponse {
-  notes: Note[];   // ✅ API повертає "notes", а не "docs"
+  notes: Note[];
   totalPages: number;
 }
 
 export interface CreateNotePayload {
   title: string;
-  content: string; // ✅ обов’язкове навіть якщо порожній рядок
+  content: string;
   tag: string;
 }
 
@@ -47,15 +48,12 @@ export const fetchNotes = async (
   return res.data;
 };
 
-export const createNote = async (
-  payload: CreateNotePayload
-): Promise<Note> => {
+export const createNote = async (payload: CreateNotePayload): Promise<Note> => {
   const res = await instance.post<Note>("/notes", payload);
   return res.data;
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
-  // ✅ API повертає видалену нотатку, а не _id/deletedCount
   const res = await instance.delete<Note>(`/notes/${id}`);
   return res.data;
 };
