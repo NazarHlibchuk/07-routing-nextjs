@@ -7,3 +7,9 @@ export interface Note {
   createdAt: string;  
   updatedAt: string; 
 }
+
+export interface NoteListResponse {
+  notes: Note[];
+  totalPages: number;
+  totalItems?: number;
+}

@@ -14,12 +14,6 @@ import type { NoteListResponse, Note } from "@/types/note";
 
 const PER_PAGE = 12;
 
-type FetchNotesParams = {
-  page: number;
-  perPage: number;
-  search: string;
-};
-
 export default function NotesClient() {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
@@ -27,16 +21,21 @@ export default function NotesClient() {
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const { data, isLoading, isError, refetch, isFetching } = useQuery<NoteListResponse>({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery<
+    NoteListResponse,
+    Error
+  >({
     queryKey: ["notes", page, debouncedSearch],
     queryFn: () =>
       fetchNotes({
         page,
         perPage: PER_PAGE,
         search: debouncedSearch,
-      } as FetchNotesParams),
-    keepPreviousData: true,
-    placeholderData: () => data,
+      }),
+    initialData: {
+      notes: [],
+      totalPages: 0,
+    },
   });
 
   const totalPages = data?.totalPages ?? 0;
@@ -61,7 +60,7 @@ export default function NotesClient() {
             pageCount={totalPages}
             currentPage={page}
             onPageChange={(p) => setPage(p)}
-            isLoading={isFetching} // передаємо стан завантаження
+            isLoading={isFetching}
           />
         )}
         <button className={css.button} onClick={() => setIsModalOpen(true)}>
@@ -69,7 +68,6 @@ export default function NotesClient() {
         </button>
       </header>
 
-      {/* Плавна анімація завантаження */}
       {isLoading || isFetching ? (
         <p className={css.loading}>Loading notes...</p>
       ) : isError ? (
