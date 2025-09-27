@@ -4,7 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
 
 export default function NotesList() {
-  const { data, isLoading, error } = useQuery(["notes"], fetchNotes);
+ const { data, isLoading, error } = useQuery({
+  queryKey: ["notes"],
+ queryFn: () => fetchNotes(),
+});
+
 
   if (isLoading) return <p>Loading notes...</p>;
   if (error) return <p>Error loading notes</p>;
