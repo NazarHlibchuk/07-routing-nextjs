@@ -1,7 +1,7 @@
 import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
 import css from "./page.module.css";
-import NotesClient from "@/app/notes/NotesClient";
+import NotesClient from "@/app/notes/Notes.client";
 
 
 export default async function NotesPage() {
