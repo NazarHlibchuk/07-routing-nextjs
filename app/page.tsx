@@ -1,36 +1,35 @@
-import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { fetchNotes } from "@/lib/api";
+// app/page.tsx
+import Link from "next/link";
 import css from "./page.module.css";
-import NotesClient from "@/app/notes/Notes.client";
 
+export const metadata = {
+  title: "NoteHub",
+  description: "Simple and efficient app for managing personal notes",
+};
 
-export default async function NotesPage() {
-  const queryClient = new QueryClient();
-
-  // Серверний prefetch першої сторінки з пустим пошуком
-  await queryClient.prefetchQuery({
-    queryKey: ["notes", 1, ""],
-    queryFn: () => fetchNotes({ page: 1, perPage: 12, search: "" }),
-  });
-
-  const dehydratedState = dehydrate(queryClient);
-
+export default function HomePage() {
   return (
-    <main>
-      <div className={css.container}>
-        <h1 className={css.title}>Welcome to NoteHub</h1>
-        <p className={css.description}>
+    <div className={css.page}>
+      <main className={css.main}>
+        <h1>Welcome to NoteHub</h1>
+
+        <p>
           NoteHub is a simple and efficient application designed for managing personal notes.
         </p>
-        <p className={css.description}>
+
+        <p>
           The app provides a clean interface for writing, editing, and browsing notes.
         </p>
 
-        {/* Передаємо дегідровані дані клієнтському компоненту */}
-        <HydrationBoundary state={dehydratedState}>
-          <NotesClient />
-        </HydrationBoundary>
-      </div>
-    </main>
+        <div className={css.ctas}>
+          <Link href="/notes" className="primary" aria-label="Переглянути нотатки">
+            Переглянути нотатки
+          </Link>
+          <Link href="/notes/new" className="secondary" aria-label="Створити нотатку">
+            Створити нотатку
+          </Link>
+        </div>
+      </main>
+    </div>
   );
 }

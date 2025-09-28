@@ -8,9 +8,14 @@ export interface Note {
   updatedAt: string; 
 }
 
-export interface NoteListResponse {
-  notes: Note[];
-  totalPages: number;
-  totalItems?: number;
+export interface CreateNoteDto {
+  title: string;
+  content: string;
+  tag: string;
 }
 
+export interface UpdateNoteDto {
+  title?: string;
+  content?: string;
+  tag?: string;
+}
