@@ -13,3 +13,4 @@ export interface NoteListResponse {
   totalPages: number;
   totalItems?: number;
 }
+
