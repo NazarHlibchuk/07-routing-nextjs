@@ -24,6 +24,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* займає всю висоту вікна */
+}
+
+main {
+  flex: 1;
+  /* розтягує контент на доступну висоту */
+  padding: 2rem;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -40,3 +53,4 @@ a {
     color-scheme: dark;
   }
 }
+
