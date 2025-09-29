@@ -20,14 +20,16 @@ const NoteDetailsClient = ({ noteId }: Props) => {
   if (isError || !note) return <p className={css.error}>Error loading note.</p>;
 
   return (
-    <div className={css.note}>
-      <h1 className={css.title}>{note.title}</h1>
-      <p className={css.content}>{note.content}</p>
-      <p className={css.tag}><strong>Tag:</strong> {note.tag}</p>
-      <p className={css.date}>
-        <strong>Created at:</strong> {new Date(note.createdAt).toLocaleString()}
-      </p>
-    </div>
+ <div className={css.container}>
+	<div className={css.item}>
+	  <div className={css.header}>
+	    <h2>Note title</h2>
+	  </div>
+	  <p className={css.content}>Note content</p>
+	  <p className={css.date}>Created date</p>
+	</div>
+</div>
+
   );
 };
 
