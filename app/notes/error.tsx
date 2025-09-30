@@ -1,20 +1,8 @@
 // app/notes/error.tsx
-
 'use client';
 
-type Props = {
-  error: Error;
-  reset: () => void;
-};
+import React from 'react';
 
-const Error = ({ error, reset }: Props) => {
-  return (
-    <div>
-      <h2>Помилка при завантаженні</h2>
-      <p>{error.message}</p>
-      <button onClick={reset}>Спробувати знову</button>
-    </div>
-  );
+export default function NotesError({ error }: { error: Error }) {
+  return <p>Could not fetch the list of notes. {error.message}</p>;
 }
-
-export default Error;

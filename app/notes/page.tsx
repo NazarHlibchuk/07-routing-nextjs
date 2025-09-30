@@ -1,30 +1,26 @@
 // app/notes/page.tsx
+import { fetchNotes } from '@/lib/api';
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
+import NotesClient from './Notes.client';
 
-import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { fetchNotes } from "@/lib/api";
-import NotesClient from "./Notes.client";
-import css from "../page.module.css";
+const topic = '';
+const page = 1;
 
-const notesKey = (page: number, search: string) => ["notes", page, search];
-
-export default async function NotesPage() {
+export default async function Notes() {
   const queryClient = new QueryClient();
 
-  // Серверний prefetch першої сторінки
   await queryClient.prefetchQuery({
-    queryKey: notesKey(1, ""),
-    queryFn: () => fetchNotes({ page: 1, perPage: 12, search: "" }),
+    queryKey: ['notes', topic, page],
+    queryFn: () => fetchNotes(topic, page),
   });
 
-  const dehydratedState = dehydrate(queryClient);
-
   return (
-    <main className={css.page}>
-      <HydrationBoundary state={dehydratedState}>
-        {/* Клієнтський компонент отримує початкові значення (він сам викликає useQuery) */}
-        <NotesClient initialPage={1} initialSearch="" perPage={12} />
-      </HydrationBoundary>
-    </main>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <NotesClient />
+    </HydrationBoundary>
   );
 }
-

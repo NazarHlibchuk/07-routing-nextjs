@@ -1,13 +1,6 @@
-// app/page.tsx
+import css from './Home/Home.module.css';
 
-import css from "./page.module.css";
-
-export const metadata = {
-  title: "NoteHub",
-  description: "Simple and efficient app for managing personal notes",
-};
-
-export default function HomePage() {
+export default function Home() {
   return (
     <main>
       <div className={css.container}>

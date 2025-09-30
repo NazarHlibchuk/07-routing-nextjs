@@ -1,32 +1,39 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api";
-import type { Note } from "@/types/note";
-import css from "./NoteDetails.module.css";
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import { fetchSingleNote } from '@/lib/api'; // 🔧 Імпорт реальної функції
+import css from './NoteDetails.module.css';
 
-type Props = {
-  noteId: string;
-};
+const NoteDetailsClient = () => {
+  const { id } = useParams<{ id: string }>();
 
-const NoteDetailsClient = ({ noteId }: Props) => {
-  const { data: note, isLoading, isError } = useQuery<Note>({
-    queryKey: ["note", noteId],
-    queryFn: () => fetchNoteById(noteId),
-    refetchOnMount: false, 
+  const {
+    data: note,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['note', id],
+    queryFn: () => fetchSingleNote(id), // ✅ Виклик реальної функції
+    refetchOnMount: false,
   });
 
-  if (isLoading) return <p className={css.loading}>Loading note...</p>;
-  if (isError || !note) return <p className={css.error}>Error loading note.</p>;
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (error || !note) return <p>Something went wrong.</p>;
+
+  const formattedDate = note.updatedAt
+    ? `Updated at: ${note.updatedAt}`
+    : `Created at: ${note.createdAt}`;
 
   return (
-    <div className={css.note}>
-      <h1 className={css.title}>{note.title}</h1>
-      <p className={css.content}>{note.content}</p>
-      <p className={css.tag}><strong>Tag:</strong> {note.tag}</p>
-      <p className={css.date}>
-        <strong>Created at:</strong> {new Date(note.createdAt).toLocaleString()}
-      </p>
+    <div className={css.container}>
+      <div className={css.item}>
+        <div className={css.header}>
+          <h2>{note.title}</h2>
+        </div>
+        <p className={css.content}>{note.content}</p>
+        <p className={css.date}>{formattedDate}</p>
+      </div>
     </div>
   );
 };
