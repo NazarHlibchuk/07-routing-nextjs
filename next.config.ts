@@ -1,7 +1,9 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'export',                 // для статичного експорту
+  basePath: '/06-notehub-nextjs',   // назва твого репозиторію
+  assetPrefix: '/06-notehub-nextjs/', // префікс для стилів і JS
 };
 
 export default nextConfig;
