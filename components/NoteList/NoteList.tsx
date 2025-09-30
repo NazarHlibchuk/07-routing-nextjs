@@ -24,12 +24,13 @@ const NoteList = ({ notes, onDeleteSuccess }: NoteListProps) => {
     <ul className={css.noteList}>
       {notes.map((note) => (
         <li key={note.id} className={css.noteItem}>
+          <Link href={`/notes/${note.id}`} className={css.noteLink}>
+            <h3 className={css.title}>{note.title}</h3>
+            <p className={css.content}>{note.content}</p>
+          </Link>
+
           <div className={css.footer}>
-            <Link href={`/notes/${note.id}`} className={css.noteLink}>
-              <h3 className={css.title}>{note.title}</h3>
-              <p className={css.content}>{note.content}</p>
-              <span className={css.tag}>{note.tag}</span>
-            </Link>
+            <span className={css.tag}>{note.tag}</span>
             <button
               className={css.deleteButton}
               onClick={() => mutation.mutate(note.id)}
