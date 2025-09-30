@@ -2,7 +2,7 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 
 
-import css from "./Pagination.module.css";
+import css from "../Pagination/Pagination.module.css";
 
 interface PaginationProps {
   pageCount: number;
