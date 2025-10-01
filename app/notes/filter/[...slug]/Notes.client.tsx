@@ -12,11 +12,21 @@ import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import css from './NotesPage.module.css';
 
-export default function NotesClient() {
+interface NotesClientProps {
+  tag?: string; // новий пропс для фільтрації за тегом
+}
+
+export default function NotesClient({ tag = '' }: NotesClientProps) {
   const [searchInput, setSearchInput] = useState('');
-  const [topic, setTopic] = useState('');
+  const [topic, setTopic] = useState(tag); // початково topic = tag
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Якщо пропс tag змінюється зовні, оновлюємо topic
+  useEffect(() => {
+    setTopic(tag);
+    setPage(1);
+  }, [tag]);
 
   // Debounce: оновлює topic через 500мс після останнього введення
   useEffect(() => {
@@ -50,25 +60,17 @@ export default function NotesClient() {
       <header className={css.toolbar}>
         <SearchBox value={searchInput} onChange={setSearchInput} />
         {isSuccess && totalPages > 1 && (
-          <Pagination
-            totalPages={totalPages}
-            page={page}
-            onPageChange={setPage}
-          />
+          <Pagination totalPages={totalPages} page={page} onPageChange={setPage} />
         )}
         <button className={css.button} onClick={openModal}>
           Create note +
         </button>
       </header>
-      {isError && (
-        <ErrorMessage text="There was an error, please try again..." />
-      )}
+      {isError && <ErrorMessage text="There was an error, please try again..." />}
       {data !== undefined && data?.notes.length === 0 && (
         <ErrorMessage text="No notes found" />
       )}
-      {data !== undefined && data?.notes.length > 0 && (
-        <NoteList notes={data?.notes} />
-      )}
+      {data !== undefined && data?.notes.length > 0 && <NoteList notes={data?.notes} />}
       {isModalOpen && (
         <Modal onClose={closeModal}>
           <NoteForm onClose={closeModal} />

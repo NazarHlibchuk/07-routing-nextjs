@@ -1,3 +1,4 @@
+// lib/api.ts
 import axios from 'axios';
 import type { Note, NoteFormValues, UpdateNoteParams } from '../types/note';
 
@@ -53,4 +54,20 @@ export const updateNote = async (
 export const deleteNote = async (id: string): Promise<Note> => {
   const resp = await axios.delete<Note>(`/notes/${id}`, authHeader);
   return resp.data;
+};
+
+// ==================== оновлений getTags ====================
+export const getTags = async (): Promise<string[]> => {
+  try {
+    // Отримуємо першу сторінку нотаток
+    const resp = await fetchNotes('', 1);
+    const notes = resp.notes || [];
+
+    // Витягуємо унікальні теги
+    const tagsSet = new Set(notes.map((note) => note.tag).filter(Boolean));
+    return Array.from(tagsSet);
+  } catch (error) {
+    console.error("Failed to fetch tags:", error);
+    return []; // fallback, щоб TagsMenu не падав
+  }
 };
