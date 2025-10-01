@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { fetchSingleNote } from "@/lib/api";
-import Modal from "@/components/Modal/Modal";
-import css from "./NotePreview.module.css";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { fetchSingleNote } from '@/lib/api';
+import Modal from '@/components/Modal/Modal';
+import css from './NotePreview.module.css';
 
 interface Note {
   id: string;
@@ -38,9 +38,7 @@ export default function NotePreview({ id }: NotePreviewProps) {
     getNote();
   }, [id]);
 
-  const handleClose = () => {
-    router.back(); // повертаємося на попередній маршрут
-  };
+  const handleClose = () => router.back();
 
   if (isLoading || !note) return null;
 
@@ -49,7 +47,13 @@ export default function NotePreview({ id }: NotePreviewProps) {
       <div className={css.preview}>
         <h2 className={css.title}>{note.title}</h2>
         <p className={css.content}>{note.content}</p>
-        <p className={css.tag}>Tag: {note.tag || "None"}</p>
+        <p className={css.tag}>Tag: {note.tag || 'None'}</p>
+        <p className={css.date}>
+          {note.updatedAt ? `Updated at: ${note.updatedAt}` : `Created at: ${note.createdAt}`}
+        </p>
+        <button className={css.backBtn} onClick={handleClose}>
+          Close
+        </button>
       </div>
     </Modal>
   );
