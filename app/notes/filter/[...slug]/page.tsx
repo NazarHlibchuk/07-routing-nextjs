@@ -1,18 +1,17 @@
-// app/notes/filter/[...slug]/page.tsx
 import NotesClient from "./Notes.client";
-import { fetchNotes } from "@/lib/api";
+import SidebarNotes from "../@sidebar/SidebarNotes";
 
 interface PageProps {
   params: { slug?: string[] };
 }
 
-export default async function NotesPage({ params }: PageProps) {
-  // Витягуємо тег з URL, якщо його немає — пустий рядок (All notes)
-  const tag = params.slug?.[0] || "";
+export default function NotesPage({ params }: PageProps) {
+  const tag = params.slug?.[0] || "All";
 
-  // Можна зробити попереднє отримання нотаток на сервері, якщо потрібно
-  // але NotesClient вже робить fetch через React Query
-  // const initialData = await fetchNotes(tag, 1);
-
-  return <NotesClient tag={tag} />;
+  return (
+    <div style={{ display: "flex", gap: "24px" }}>
+      <SidebarNotes />
+      <NotesClient tag={tag} />
+    </div>
+  );
 }
