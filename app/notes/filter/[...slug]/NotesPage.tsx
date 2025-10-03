@@ -13,11 +13,11 @@ import { Toaster } from 'react-hot-toast';
 import type { NotesHTTPResponse } from '@/types/note';
 import css from './NotesPage.module.css';
 
-interface NotesClientProps {
+interface NotesPageProps {
   tag?: string;
 }
 
-export default function NotesClient({ tag = '' }: NotesClientProps) {
+export default function NotesPage({ tag = '' }: NotesPageProps) {
   const [searchInput, setSearchInput] = useState('');
   const [topic, setTopic] = useState(tag === 'All' ? '' : tag);
   const [page, setPage] = useState(1);
@@ -63,7 +63,7 @@ export default function NotesClient({ tag = '' }: NotesClientProps) {
       </header>
 
       {isError && <ErrorMessage text="There was an error, please try again..." />}
-      {notes.length === 0 && <ErrorMessage text="No notes found" />}
+      {notes.length === 0 && !isError && <ErrorMessage text="No notes found" />}
       {notes.length > 0 && <NoteList notes={notes} />}
 
       {isModalOpen && (
@@ -71,7 +71,6 @@ export default function NotesClient({ tag = '' }: NotesClientProps) {
           <NoteForm onClose={closeModal} />
         </Modal>
       )}
-
       <Toaster />
     </div>
   );
