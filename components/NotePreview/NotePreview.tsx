@@ -1,40 +1,46 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { fetchNote } from '@/lib/api';
+import Modal from '../Modal/Modal';
 import type { Note } from '@/types/note';
 import css from './NotePreview.module.css';
 
 interface NotePreviewProps {
-  note: Note;
-  onDelete: () => void;
-  isDeleting?: boolean;
+  noteId: string;
 }
 
-const NotePreview = ({ note, onDelete, isDeleting }: NotePreviewProps) => {
+const NotePreview = ({ noteId }: NotePreviewProps) => {
+  const router = useRouter();
+
+  // Підвантажуємо нотатку по id
+  const { data: note, isLoading, isError } = useQuery<Note, Error>({
+    queryKey: ['note', noteId],
+    queryFn: () => fetchNote(noteId),
+  });
+
+  const handleClose = () => {
+    router.back(); // повертаємось на попередню сторінку
+  };
+
+  if (isLoading) return <Modal onClose={handleClose}>Loading...</Modal>;
+  if (isError || !note) return <Modal onClose={handleClose}>Note not found</Modal>;
+
   return (
-    <li className={css.item}>
-      <div className={css.header}>
-        <h2>{note.title}</h2>
-        <span className={css.tag}>{note.tag}</span>
+    <Modal onClose={handleClose}>
+      <div className={css.container}>
+        <div className={css.header}>
+          <h2>{note.title}</h2>
+          <button className={css.backBtn} onClick={handleClose}>
+            Close
+          </button>
+        </div>
+        <p className={css.content}>{note.content}</p>
+        <span className={css.date}>{new Date(note.createdAt).toLocaleString()}</span>
+        {note.tag && <span className={css.tag}>{note.tag}</span>}
       </div>
-      <p className={css.content}>{note.content}</p>
-      <div className={css.footer}>
-        <Link href={`/notes/${note.id}`} className={css.link}>
-          View details
-        </Link>
-        <button
-          className={css.button}
-          onClick={onDelete}
-          disabled={isDeleting}
-          aria-label={`Delete note titled ${note.title}`}
-        >
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </button>
-      </div>
-      <div className={css.date}>
-        Created: {new Date(note.createdAt).toLocaleDateString()}
-      </div>
-    </li>
+    </Modal>
   );
 };
 

@@ -1,25 +1,20 @@
 // app/notes/filter/[...slug]/page.tsx
 import SidebarNotes from '../@sidebar/SidebarNotes';
-import NotesPage from './NotesPage';
-import type { ReactNode } from 'react';
+import NotesPage from './NotesPage'; 
 
 interface PageProps {
-  params: { slug?: string[] }; // catch-all params
+  params: { slug?: string[] | undefined };
 }
 
-export default function Page({ params }: PageProps) {
-  // Якщо slug немає або порожній, показуємо All
-  const tag = params?.slug?.[0] || 'All';
+export default async function Page({ params }: PageProps) {
+
+  const slugArray = params.slug ?? [];
+  const tag = slugArray[0] || 'All';
 
   return (
     <div style={{ display: 'flex', gap: '24px' }}>
-      {/* Бокове меню з тегами */}
       <SidebarNotes />
-
-      {/* Основний контент */}
-      <main style={{ flex: 1 }}>
-        <NotesPage tag={tag} />
-      </main>
+      <NotesPage tag={tag} />
     </div>
   );
 }

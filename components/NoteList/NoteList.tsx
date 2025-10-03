@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteNote } from '@/lib/api';
 import type { Note } from '@/types/note';
+import { usePathname, useRouter } from 'next/navigation';
 import css from './NoteList.module.css';
 
 interface NoteListProps {
@@ -12,6 +13,8 @@ interface NoteListProps {
 
 const NoteList = ({ notes }: NoteListProps) => {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const deleteNoteMutation = useMutation<Note, Error, string>({
     mutationFn: deleteNote,
@@ -22,6 +25,10 @@ const NoteList = ({ notes }: NoteListProps) => {
 
   const handleDelete = (noteId: string) => {
     deleteNoteMutation.mutate(noteId);
+  };
+
+  const openNoteModal = (noteId: string) => {
+    router.push(`${pathname.replace(/\/$/, '')}/${noteId}`);
   };
 
   if (notes.length === 0) {
@@ -46,9 +53,14 @@ const NoteList = ({ notes }: NoteListProps) => {
             <p className={css.content}>{note.content}</p>
             <div className={css.footer}>
               <span className={css.tag}>{note.tag}</span>
-              <Link href={`/notes/${note.id}`} className={css.link}>
+
+              <button
+                className={css.link}
+                onClick={() => openNoteModal(note.id)}
+              >
                 View details
-              </Link>
+              </button>
+
               <button
                 className={css.button}
                 onClick={() => handleDelete(note.id)}

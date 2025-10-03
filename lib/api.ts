@@ -25,7 +25,7 @@ export const fetchNotes = async (
 };
 
 // ✅ отримати одну нотатку
-export const fetchSingleNote = async (id: string): Promise<Note> => {
+export const fetchNote = async (id: string): Promise<Note> => {
   const resp = await axios.get<Note>(`/notes/${id}`);
   return resp.data;
 };
