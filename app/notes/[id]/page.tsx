@@ -1,4 +1,3 @@
-// app/notes/[id]/page.tsx
 import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { fetchSingleNote } from "@/lib/api";
 import NoteDetailsClient from "./NoteDetails.client";
@@ -8,8 +7,7 @@ interface PageProps {
 }
 
 const NoteDetailsPage = async ({ params }: PageProps) => {
-  // ⚠️ Await для params
-  const { id } = await params;
+  const { id } = params; 
 
   const queryClient = new QueryClient();
 

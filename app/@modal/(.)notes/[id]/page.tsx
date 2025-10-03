@@ -1,9 +1,10 @@
-import NotePreview from '@/app/notes/[id]/NotePreview';
+import NotePreview from "@/app/notes/[id]/NotePreview";
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>; // ⚡ тут Promise!
 }
 
-export default function NoteModal({ params }: PageProps) {
-  return <NotePreview id={params.id} />;
+export default async function NoteModal({ params }: PageProps) {
+  const { id } = await params; // ✅ тут await потрібен
+  return <NotePreview id={id} />;
 }

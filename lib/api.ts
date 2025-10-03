@@ -1,74 +1,57 @@
 // lib/api.ts
-import axios from 'axios';
-import type { Note, NoteFormValues, UpdateNoteParams } from '../types/note';
+import axios from "axios";
+import type { Note, NoteFormValues, UpdateNoteParams } from "../types/note";
 
 interface NotesHTTPResponse {
   notes: Note[];
   totalPages: number;
 }
 
-const NOTEHUB_TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
+// 🔧 нова база API
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL || "https://next-docs-9f0504b0a741.herokuapp.com";
 
-axios.defaults.baseURL = 'https://notehub-public.goit.study/api';
-
-const authHeader = {
-  headers: {
-    Authorization: `Bearer ${NOTEHUB_TOKEN}`,
-  },
-};
-
-export const fetchNotes = async (
-  search: string,
-  page: number,
-): Promise<NotesHTTPResponse> => {
-  const resp = await axios.get<NotesHTTPResponse>('/notes', {
+// ✅ отримати всі нотатки
+export const fetchNotes = async (search = "", page = 1): Promise<NotesHTTPResponse> => {
+  const resp = await axios.get<NotesHTTPResponse>("/notes", {
     params: { search, page, perPage: 12 },
-    ...authHeader,
   });
   return resp.data;
 };
 
+// ✅ отримати одну нотатку
 export const fetchSingleNote = async (id: string): Promise<Note> => {
-  const resp = await axios.get<Note>(`/notes/${id}`, authHeader);
+  const resp = await axios.get<Note>(`/notes/${id}`);
   return resp.data;
 };
 
-export const createNote = async ({
-  title,
-  content,
-  tag,
-}: NoteFormValues): Promise<Note> => {
+// ✅ створити нотатку
+export const createNote = async ({ title, content, tag }: NoteFormValues): Promise<Note> => {
   const newNote = { title, content, tag };
-  const resp = await axios.post<Note>('/notes', newNote, authHeader);
+  const resp = await axios.post<Note>("/notes", newNote);
   return resp.data;
 };
 
-export const updateNote = async (
-  id: string,
-  payload: UpdateNoteParams,
-): Promise<Note> => {
-  const resp = await axios.patch<Note>(`/notes/${id}`, payload, authHeader);
+// ✅ оновити нотатку
+export const updateNote = async (id: string, payload: UpdateNoteParams): Promise<Note> => {
+  const resp = await axios.patch<Note>(`/notes/${id}`, payload);
   return resp.data;
 };
 
+// ✅ видалити нотатку
 export const deleteNote = async (id: string): Promise<Note> => {
-  const resp = await axios.delete<Note>(`/notes/${id}`, authHeader);
+  const resp = await axios.delete<Note>(`/notes/${id}`);
   return resp.data;
 };
 
-// ==================== оновлений getTags ====================
+// ✅ отримати унікальні теги
 export const getTags = async (): Promise<string[]> => {
   try {
-    // Отримуємо першу сторінку нотаток
-    const resp = await fetchNotes('', 1);
+    const resp = await fetchNotes("", 1);
     const notes = resp.notes || [];
-
-    // Витягуємо унікальні теги
     const tagsSet = new Set(notes.map((note) => note.tag).filter(Boolean));
     return Array.from(tagsSet);
   } catch (error) {
     console.error("Failed to fetch tags:", error);
-    return []; // fallback, щоб TagsMenu не падав
+    return [];
   }
 };
-//
