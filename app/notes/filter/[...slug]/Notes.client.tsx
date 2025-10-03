@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { NotesHTTPResponse } from '@/types/note';
-import css from './NotesPage.module.css';
+import css from './NotesClient.module.css';
 
 interface NotesClientProps {
   tag?: string;
@@ -23,13 +23,11 @@ export default function NotesClient({ tag = '' }: NotesClientProps) {
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Оновлюємо topic при зміні пропсу tag
   useEffect(() => {
     setTopic(tag === 'All' ? '' : tag);
     setPage(1);
   }, [tag]);
 
-  // Debounce для пошуку
   useEffect(() => {
     const handler = setTimeout(() => {
       setTopic(searchInput);
@@ -39,16 +37,15 @@ export default function NotesClient({ tag = '' }: NotesClientProps) {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
-  // TanStack Query v5 без keepPreviousData
   const { data, isError, isSuccess } = useQuery<NotesHTTPResponse, Error>({
     queryKey: ['notes', topic, page],
     queryFn: () => fetchNotes(topic, page),
     refetchOnMount: false,
-    staleTime: 5000, // дані вважаються свіжими 5 секунд
+    staleTime: 5000,
   });
 
   const totalPages = data?.totalPages ?? 0;
-  const notes = data?.notes ?? []; // безпечний доступ до notes
+  const notes = data?.notes ?? [];
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -74,6 +71,7 @@ export default function NotesClient({ tag = '' }: NotesClientProps) {
           <NoteForm onClose={closeModal} />
         </Modal>
       )}
+
       <Toaster />
     </div>
   );
