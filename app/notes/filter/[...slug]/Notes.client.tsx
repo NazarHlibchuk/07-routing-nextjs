@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import type { NotesHTTPResponse } from '@/types/note';
-import css from './NotesClient.module.css';
+import css from './NotesPage.module.css';
 
 interface NotesClientProps {
   tag?: string;
