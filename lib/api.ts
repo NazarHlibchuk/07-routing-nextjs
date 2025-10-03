@@ -1,21 +1,27 @@
-// lib/api.ts
 import axios from "axios";
-import type { Note, NoteFormValues, UpdateNoteParams } from "../types/note";
-
-interface NotesHTTPResponse {
-  notes: Note[];
-  totalPages: number;
-}
+import type { Note, NoteFormValues, UpdateNoteParams, NotesHTTPResponse } from "../types/note";
 
 // 🔧 нова база API
-axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL || "https://next-docs-9f0504b0a741.herokuapp.com";
+axios.defaults.baseURL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://next-docs-9f0504b0a741.herokuapp.com";
 
 // ✅ отримати всі нотатки
-export const fetchNotes = async (search = "", page = 1): Promise<NotesHTTPResponse> => {
-  const resp = await axios.get<NotesHTTPResponse>("/notes", {
+export const fetchNotes = async (
+  search = "",
+  page = 1
+): Promise<NotesHTTPResponse> => {
+  const resp = await axios.get("/notes", {
     params: { search, page, perPage: 12 },
   });
-  return resp.data;
+
+  const data = resp.data;
+
+  return {
+    notes: data.notes || [],
+    totalPages: data.totalPages || 1,
+    totalNotes: data.totalNotes ?? (data.notes ? data.notes.length : 0),
+  };
 };
 
 // ✅ отримати одну нотатку
@@ -25,14 +31,21 @@ export const fetchSingleNote = async (id: string): Promise<Note> => {
 };
 
 // ✅ створити нотатку
-export const createNote = async ({ title, content, tag }: NoteFormValues): Promise<Note> => {
+export const createNote = async ({
+  title,
+  content,
+  tag,
+}: NoteFormValues): Promise<Note> => {
   const newNote = { title, content, tag };
   const resp = await axios.post<Note>("/notes", newNote);
   return resp.data;
 };
 
 // ✅ оновити нотатку
-export const updateNote = async (id: string, payload: UpdateNoteParams): Promise<Note> => {
+export const updateNote = async (
+  id: string,
+  payload: UpdateNoteParams
+): Promise<Note> => {
   const resp = await axios.patch<Note>(`/notes/${id}`, payload);
   return resp.data;
 };

@@ -7,28 +7,29 @@ import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import { fetchNotes } from '@/lib/api';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
+import type { NotesHTTPResponse } from '@/types/note';
 import css from './NotesPage.module.css';
 
 interface NotesClientProps {
-  tag?: string; // новий пропс для фільтрації за тегом
+  tag?: string;
 }
 
 export default function NotesClient({ tag = '' }: NotesClientProps) {
   const [searchInput, setSearchInput] = useState('');
-  const [topic, setTopic] = useState(tag); // початково topic = tag
+  const [topic, setTopic] = useState(tag === 'All' ? '' : tag);
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Якщо пропс tag змінюється зовні, оновлюємо topic
+  // Оновлюємо topic при зміні пропсу tag
   useEffect(() => {
-    setTopic(tag);
+    setTopic(tag === 'All' ? '' : tag);
     setPage(1);
   }, [tag]);
 
-  // Debounce: оновлює topic через 500мс після останнього введення
+  // Debounce для пошуку
   useEffect(() => {
     const handler = setTimeout(() => {
       setTopic(searchInput);
@@ -38,22 +39,19 @@ export default function NotesClient({ tag = '' }: NotesClientProps) {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
-  const { data, isError, isSuccess } = useQuery({
+  // TanStack Query v5 без keepPreviousData
+  const { data, isError, isSuccess } = useQuery<NotesHTTPResponse, Error>({
     queryKey: ['notes', topic, page],
     queryFn: () => fetchNotes(topic, page),
-    placeholderData: keepPreviousData,
     refetchOnMount: false,
+    staleTime: 5000, // дані вважаються свіжими 5 секунд
   });
 
   const totalPages = data?.totalPages ?? 0;
+  const notes = data?.notes ?? []; // безпечний доступ до notes
 
-  function openModal() {
-    setIsModalOpen(true);
-  }
-
-  function closeModal() {
-    setIsModalOpen(false);
-  }
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className={css.app}>
@@ -66,11 +64,11 @@ export default function NotesClient({ tag = '' }: NotesClientProps) {
           Create note +
         </button>
       </header>
+
       {isError && <ErrorMessage text="There was an error, please try again..." />}
-      {data !== undefined && data?.notes.length === 0 && (
-        <ErrorMessage text="No notes found" />
-      )}
-      {data !== undefined && data?.notes.length > 0 && <NoteList notes={data?.notes} />}
+      {notes.length === 0 && <ErrorMessage text="No notes found" />}
+      {notes.length > 0 && <NoteList notes={notes} />}
+
       {isModalOpen && (
         <Modal onClose={closeModal}>
           <NoteForm onClose={closeModal} />

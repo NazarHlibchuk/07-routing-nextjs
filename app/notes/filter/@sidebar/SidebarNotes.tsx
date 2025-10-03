@@ -1,31 +1,27 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import css from "./SidebarNotes.module.css";
-import { getTags } from "@/lib/api";
+import Link from 'next/link';
+import css from './SidebarNotes.module.css';
+import type { NoteTag } from '@/types/note';
+
+const ALL_TAG = 'All';
+const TAGS: NoteTag[] = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];
 
 export default function SidebarNotes() {
-  const [tags, setTags] = useState<string[]>([]);
-
-  useEffect(() => {
-    async function fetchTags() {
-      const fetchedTags = await getTags();
-      setTags(["All", ...fetchedTags]); // додаємо "All" як перший пункт
-    }
-
-    fetchTags();
-  }, []);
-
   return (
     <aside className={css.sidebar}>
       <ul className={css.menuList}>
-        {tags.map((tag) => (
+        {/* All notes */}
+        <li className={css.menuItem}>
+          <Link href="/notes/filter" className={css.menuLink}>
+            {ALL_TAG}
+          </Link>
+        </li>
+
+        {/* Решта тегів */}
+        {TAGS.map((tag) => (
           <li key={tag} className={css.menuItem}>
-            <Link
-              href={tag === "All" ? `/notes/filter` : `/notes/filter/${tag}`}
-              className={css.menuLink}
-            >
+            <Link href={`/notes/filter/${tag}`} className={css.menuLink}>
               {tag}
             </Link>
           </li>
