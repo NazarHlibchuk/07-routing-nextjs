@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Note, NoteFormValues, UpdateNoteParams, NotesHTTPResponse } from "../types/note";
+import type { Note, NoteFormValues, UpdateNoteParams, NotesHTTPResponse } from "@/types/note";
 
 // 🔧 нова база API
 axios.defaults.baseURL =
@@ -24,11 +24,14 @@ export const fetchNotes = async (
   };
 };
 
-// ✅ отримати одну нотатку
+// ✅ отримати одну нотатк
+
 export const fetchNote = async (id: string): Promise<Note> => {
-  const resp = await axios.get<Note>(`/notes/${id}`);
-  return resp.data;
+  const res = await fetch(`/api/notes/${id}`);
+  if (!res.ok) throw new Error('Failed to fetch note');
+  return res.json();
 };
+
 
 // ✅ створити нотатку
 export const createNote = async ({

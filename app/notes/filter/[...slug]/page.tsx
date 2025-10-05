@@ -1,15 +1,13 @@
-// app/notes/filter/[...slug]/page.tsx
 import SidebarNotes from '../@sidebar/SidebarNotes';
-import NotesPage from './NotesPage'; 
+import NotesPage from './NotesPage'; // твій клієнтський компонент зі списком нотаток
 
 interface PageProps {
-  params: { slug?: string[] | undefined };
+  params: Promise<{ slug?: string[] }>;
 }
 
 export default async function Page({ params }: PageProps) {
-
-  const slugArray = params.slug ?? [];
-  const tag = slugArray[0] || 'All';
+  const { slug } = await params;
+  const tag = slug?.[0] || 'All';
 
   return (
     <div style={{ display: 'flex', gap: '24px' }}>
@@ -18,3 +16,5 @@ export default async function Page({ params }: PageProps) {
     </div>
   );
 }
+
+

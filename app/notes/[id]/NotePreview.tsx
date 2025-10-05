@@ -8,7 +8,7 @@ import css from './NotePreview.module.css';
 
 interface NotePreviewProps {
   noteId: string;
-  onClose?: () => void; // функція для закриття модалки
+  onClose?: () => void; // функція для закриття модалки (необов’язкова)
 }
 
 const NotePreview = ({ noteId, onClose }: NotePreviewProps) => {
@@ -17,16 +17,19 @@ const NotePreview = ({ noteId, onClose }: NotePreviewProps) => {
     queryFn: () => fetchNote(noteId),
   });
 
-  if (isLoading) return <Modal onClose={onClose}>Loading...</Modal>;
-  if (isError) return <Modal onClose={onClose}>Error loading note</Modal>;
+  // якщо onClose не переданий — використовуємо пусту функцію
+  const handleClose = onClose ?? (() => {});
+
+  if (isLoading) return <Modal onClose={handleClose}>Loading...</Modal>;
+  if (isError) return <Modal onClose={handleClose}>Error loading note</Modal>;
 
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={handleClose}>
       <div className={css.preview}>
-        <h2 className={css.title}>{note.title}</h2>
-        <p className={css.content}>{note.content}</p>
-        <span className={css.tag}>{note.tag}</span>
-        <button className={css.closeButton} onClick={onClose}>
+        <h2 className={css.title}>{note?.title}</h2>
+        <p className={css.content}>{note?.content}</p>
+        <span className={css.tag}>{note?.tag}</span>
+        <button className={css.closeButton} onClick={handleClose}>
           Close
         </button>
       </div>
