@@ -1,5 +1,5 @@
 import SidebarNotes from '../@sidebar/SidebarNotes';
-import NotesPage from './NotesPage'; // твій клієнтський компонент зі списком нотаток
+import NotesPage from './Notes.client'; // твій клієнтський компонент зі списком нотаток
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
