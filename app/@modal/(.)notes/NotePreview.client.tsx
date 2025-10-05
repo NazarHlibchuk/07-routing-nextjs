@@ -6,27 +6,30 @@ import Modal from '@/components/Modal/Modal';
 import type { Note } from '@/types/note';
 import css from './NotePreview.module.css';
 
-interface NotePreviewClientProps {
-  id: string;
+interface NotePreviewProps {
+  noteId: string;
   onClose?: () => void;
 }
 
-export default function NotePreviewClient({ id, onClose }: NotePreviewClientProps) {
+export default function NotePreview({ noteId, onClose }: NotePreviewProps) {
   const { data: note, isLoading, isError } = useQuery<Note, Error>({
-    queryKey: ['note', id],
-    queryFn: () => fetchNote(id),
+    queryKey: ['note', noteId],
+    queryFn: () => fetchNote(noteId),
   });
 
-  if (isLoading) return <Modal onClose={onClose}>Loading...</Modal>;
-  if (isError) return <Modal onClose={onClose}>Error loading note</Modal>;
+  const handleClose = onClose ?? (() => {});
+
+  if (isLoading) return <Modal onClose={handleClose}>Loading...</Modal>;
+  if (isError || !note)
+    return <Modal onClose={handleClose}>Error loading note</Modal>;
 
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={handleClose}>
       <div className={css.preview}>
         <h2 className={css.title}>{note.title}</h2>
         <p className={css.content}>{note.content}</p>
         <span className={css.tag}>{note.tag}</span>
-        <button className={css.closeButton} onClick={onClose}>
+        <button className={css.closeButton} onClick={handleClose}>
           Close
         </button>
       </div>
