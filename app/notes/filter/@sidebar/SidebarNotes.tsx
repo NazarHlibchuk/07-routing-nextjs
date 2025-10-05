@@ -9,7 +9,7 @@ const TAGS: NoteTag[] = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];
 
 export default function SidebarNotes() {
   return (
-    <aside className={css.sidebar}>
+    <nav>
       <ul className={css.menuList}>
         {/* All notes */}
         <li className={css.menuItem}>
@@ -18,8 +18,8 @@ export default function SidebarNotes() {
           </Link>
         </li>
 
-        {/* Решта тегів */}
-        {TAGS.map((tag) => (
+        {/* Tags */}
+        {TAGS.map(tag => (
           <li key={tag} className={css.menuItem}>
             <Link href={`/notes/filter/${tag}`} className={css.menuLink}>
               {tag}
@@ -27,6 +27,6 @@ export default function SidebarNotes() {
           </li>
         ))}
       </ul>
-    </aside>
+    </nav>
   );
 }
