@@ -18,30 +18,38 @@ interface NotesClientProps {
 }
 
 export default function NotesClient({ tag = '' }: NotesClientProps) {
+  // 🔹 пошук (input)
   const [searchInput, setSearchInput] = useState('');
-  const [topic, setTopic] = useState(tag === 'All' ? '' : tag);
+  // 🔹 активний тег (із пропса)
+  const [activeTag, setActiveTag] = useState(tag === 'All' ? '' : tag);
+  // 🔹 реальний пошуковий запит після debounce
+  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // оновлюємо тег при зміні URL (slug)
   useEffect(() => {
-    setTopic(tag === 'All' ? '' : tag);
+    setActiveTag(tag === 'All' ? '' : tag);
     setPage(1);
   }, [tag]);
 
+  // debounce для пошуку
   useEffect(() => {
     const handler = setTimeout(() => {
-      setTopic(searchInput);
+      setSearchQuery(searchInput);
       setPage(1);
     }, 500);
     return () => clearTimeout(handler);
   }, [searchInput]);
 
-  const { data, isError, isSuccess } = useQuery<NotesHTTPResponse, Error>({
-    queryKey: ['notes', topic, page],
-    queryFn: () => fetchNotes(topic, page),
-    refetchOnMount: false,
-    staleTime: 5000,
-  });
+  // обидва фільтри — тег і пошук — передаються окремо
+   const { data, isError, isSuccess } = useQuery<NotesHTTPResponse, Error>({
+     queryKey: ['notes', activeTag, searchQuery, page],
+     queryFn: () => fetchNotes(activeTag, searchQuery, page),
+     refetchOnMount: false,
+     staleTime: 1000 * 60,
+   });
+
 
   const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 0;

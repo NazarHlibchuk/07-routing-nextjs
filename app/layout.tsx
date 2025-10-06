@@ -1,5 +1,4 @@
 // app/layout.tsx
-
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -24,9 +23,14 @@ export const metadata: Metadata = {
     'A simple and efficient application for managing personal notes.',
 };
 
+// додаємо підтримку паралельного слоту `modal`
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  modal,
+}: Readonly<{
+  children: React.ReactNode;
+  modal: React.ReactNode; // новий проп для паралельного маршруту
+}>) {
   return (
     <html lang="en">
       <body
@@ -36,8 +40,8 @@ export default function RootLayout({
           <Header />
           <main>{children}</main>
           <Footer />
+          {modal /*  тут рендеримо паралельний слот */}
         </TanStackProvider>
-        <div id="modal-root" />
       </body>
     </html>
   );
