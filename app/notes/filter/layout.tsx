@@ -1,6 +1,5 @@
-// app/notes/filter/layout.tsx
 import type { ReactNode } from "react";
-import styles from "./LayoutNotes.module.css"; // якщо у тебе є CSS
+import styles from "./LayoutNotes.module.css";
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,9 +8,9 @@ interface LayoutProps {
 
 export default function LayoutNotes({ children, sidebar }: LayoutProps) {
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.container}>
       <aside className={styles.sidebar}>{sidebar}</aside>
-      <main className={styles.content}>{children}</main>
+      <div className={styles.notesWrapper}>{children}</div>
     </div>
   );
 }

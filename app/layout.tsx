@@ -23,8 +23,11 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <TanStackProvider>
           <Header />
-          <main>{children}</main>
-          <Footer />
+          <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+  {children}
+</main>
+<Footer />
+
           {modal /* паралельний слот для модалок */}
         </TanStackProvider>
       </body>
