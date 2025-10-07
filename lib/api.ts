@@ -20,17 +20,19 @@ axios.interceptors.request.use((config) => {
 
 // Отримати всі нотатки (окремі tag і search, валідна пагінація)
 export const fetchNotes = async (
-  tag = "",
+  tag = "All",
   search = "",
   page = 1
 ): Promise<NotesHTTPResponse> => {
-  const params: Record<string, string | number> = { page, perPage: 12 };
-  // За ТЗ: або search, або tag
-  if (search.trim()) {
-    params.search = search.trim();
-  } else if (tag.trim() && tag !== "All") {
-    params.tag = tag.trim();
-  }
+  const safeTag = tag && tag.trim() ? tag.trim() : "All";
+
+  const params: Record<string, string | number> = {
+    tag: safeTag,         
+    page,
+    perPage: 12,
+  };
+
+  if (search.trim()) params.search = search.trim();
 
   const resp = await axios.get<NotesHTTPResponse>("/notes", { params });
   const data = resp.data;
@@ -41,6 +43,7 @@ export const fetchNotes = async (
     totalNotes: data.totalNotes ?? (data.notes ? data.notes.length : 0),
   };
 };
+
 
 export const fetchNote = async (id: string): Promise<Note> => {
   const resp = await axios.get<Note>(`/notes/${id}`);

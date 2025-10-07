@@ -19,28 +19,21 @@ interface Props {
 
 export default function NotesClient({ tag = "All" }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTag, setActiveTag] = useState(tag === "All" ? "" : tag);
+  const [activeTag, setActiveTag] = useState(tag);
   const [page, setPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // ✅ додано стан
 
-  // змінюємо активний тег при зміні маршруту
   useEffect(() => {
-    setActiveTag(tag === "All" ? "" : tag);
+    setActiveTag(tag);
     setPage(1);
-    setSearchQuery(""); // за ТЗ: фільтр і пошук — незалежні; очищаємо пошук при зміні тега
   }, [tag]);
-
-  // легкий debounce сторінки при наборі пошуку
-  useEffect(() => {
-    const t = setTimeout(() => setPage(1), 300);
-    return () => clearTimeout(t);
-  }, [searchQuery]);
 
   const { data, isError, isSuccess } = useQuery<NotesHTTPResponse, Error>({
     queryKey: ["notes", activeTag, searchQuery, page],
     queryFn: () => fetchNotes(activeTag, searchQuery, page),
     refetchOnMount: false,
     staleTime: 60_000,
+    enabled: !!activeTag, // ✅ безпечна перевірка
   });
 
   const notes = data?.notes || [];
@@ -50,6 +43,7 @@ export default function NotesClient({ tag = "All" }: Props) {
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox value={searchQuery} onChange={setSearchQuery} />
+
         {isSuccess && totalPages > 1 && (
           <Pagination
             totalPages={totalPages}
@@ -57,6 +51,7 @@ export default function NotesClient({ tag = "All" }: Props) {
             onPageChange={setPage}
           />
         )}
+
         <button className={css.button} onClick={() => setIsModalOpen(true)}>
           Create note +
         </button>
@@ -71,6 +66,7 @@ export default function NotesClient({ tag = "All" }: Props) {
           <NoteForm onClose={() => setIsModalOpen(false)} />
         </Modal>
       )}
+
       <Toaster />
     </div>
   );
