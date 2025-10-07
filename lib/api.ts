@@ -6,33 +6,34 @@ import type {
   NotesHTTPResponse,
 } from "@/types/note";
 
-// База API
 axios.defaults.baseURL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://next-docs-9f0504b0a741.herokuapp.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://notehub-public.goit.study/api";
 
-// Авторизація
+  
 axios.interceptors.request.use((config) => {
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
-// Отримати всі нотатки (окремі tag і search, валідна пагінація)
+// ✅ Отримати всі нотатки (tag, search, pagination)
 export const fetchNotes = async (
   tag = "All",
   search = "",
   page = 1
 ): Promise<NotesHTTPResponse> => {
-  const safeTag = tag && tag.trim() ? tag.trim() : "All";
+  const params: Record<string, string | number> = { page, perPage: 12 };
 
-  const params: Record<string, string | number> = {
-    tag: safeTag,         
-    page,
-    perPage: 12,
-  };
-
-  if (search.trim()) params.search = search.trim();
+  // 🔹 якщо є пошук — передаємо тільки search
+  if (search.trim()) {
+    params.search = search.trim();
+  }
+  // 🔹 якщо тег відмінний від "All" — додаємо у запит
+  else if (tag && tag !== "All") {
+    params.tag = tag.trim();
+  }
 
   const resp = await axios.get<NotesHTTPResponse>("/notes", { params });
   const data = resp.data;
@@ -44,17 +45,19 @@ export const fetchNotes = async (
   };
 };
 
-
+// ✅ Отримати одну нотатку
 export const fetchNote = async (id: string): Promise<Note> => {
   const resp = await axios.get<Note>(`/notes/${id}`);
   return resp.data;
 };
 
+// ✅ Створити нову нотатку
 export const createNote = async (payload: NoteFormValues): Promise<Note> => {
   const resp = await axios.post<Note>("/notes", payload);
   return resp.data;
 };
 
+// ✅ Оновити нотатку
 export const updateNote = async (
   id: string,
   payload: UpdateNoteParams
@@ -63,13 +66,15 @@ export const updateNote = async (
   return resp.data;
 };
 
+// ✅ Видалити нотатку
 export const deleteNote = async (id: string): Promise<Note> => {
   const resp = await axios.delete<Note>(`/notes/${id}`);
   return resp.data;
 };
 
+// ✅ Отримати всі унікальні теги
 export const getTags = async (): Promise<string[]> => {
-  const resp = await fetchNotes("", "", 1);
+  const resp = await fetchNotes("All", "", 1);
   const tagsSet = new Set(resp.notes.map((n) => n.tag).filter(Boolean));
   return Array.from(tagsSet);
 };
